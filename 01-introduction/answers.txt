@@ -1,0 +1,104 @@
+1. What data types do each of these values represent?
+
+  1. "A Clockwork Orange" --> string
+  2. 42   --> integer
+  3. 09/02/1945  --> date
+  4. 98.7  --> float
+  5. $15.99  --> float
+
+
+2. Explain in your own words when a database might be used. Explain when a text file might be used.
+
+Databases are used to store information that needs to persist beyond an application session. Since databases are stored in binary format, it is in a language that cannot be read and understood by us. A database can be transferred to a text file which is legible to us.
+
+
+3. Describe one difference between SQL and other programming languages.
+
+SQL is a declarative language compared to a procedural language such as Ruby. SQL will complete an action that we request in the most efficient way. Inversely, algorithms must be written in Ruby to complete a task.
+
+
+4. In your own words, explain how the pieces of a database system fit together at a high level.
+
+A database system stores pieces of data in an organized manner through columns and rows in tables. The columns represent the attribute of the data and the rows represent each individual record.
+
+
+5. Explain the meaning of table, row, column, and value.
+
+A table is a collection of rows and columns. The row is a set of an individual record. The column describes what is represented by the data. A value is piece of data in a string, integer, float, or object format that is stored in a particular row and column within the table.
+
+
+6. List 3 data types that can be used in a table.
+
+String, integer, and float
+
+
+7. Given this payments table, provide an English description of the following queries and include their results:
+
+  SELECT date, amount
+  FROM payments;
+
+    Description: Return the date and amount columns for the payments table.
+
+    Result:
+    date            amount
+    '2016-05-01'    1500.00
+    '2016-05-10'    37.00
+    '2016-05-15'    124.93
+    '2016-05-23'    54.72
+
+
+  SELECT amount
+  FROM payments
+  WHERE amount > 500;
+
+    Description: Return all values greater than 500 from the amount column from the payments table.
+
+    Result:
+    amount
+    1500.00
+
+
+  SELECT *
+  FROM payments
+  WHERE payee = 'Mega Foods';
+
+    Description: Return all the values in the row where the payee is 'Mega Foods' in the payments table.
+
+    Result:
+    date            payee           amount    memo
+    '2016-05-15'    'Mega Foods'    124.93    'Groceries'
+
+
+8. Given this users table, write SQL queries using the following criteria and include the output:
+
+  The email and sign-up date for the user named DeAndre Data.
+
+    SELECT email, signup
+    FROM users
+    WHERE name = "DeAndre Data";
+
+    Output:
+    email                 signup
+    datad@comcast.net     2008-01-20
+
+
+  The user ID for the user with email 'aleesia.algorithm@uw.edu'.
+
+    SELECT userid
+    FROM users
+    WHERE email = "aleesia.algorithm@uw.edu";
+
+    Output:
+    userid
+    1
+
+
+  All the columns for the user ID equal to 4.
+
+    SELECT *
+    FROM users
+    WHERE userid = 4;
+
+    Output:
+    userid    name                  email                 signup
+    4         'Brandy Boolean'      'bboolean@nasa.gov'   '1999-10-15'

@@ -1,0 +1,143 @@
+1. List the commands for adding, updating, and deleting data.
+
+Adding: INSERT INTO table(column) VALUES (data);
+Updating: UPDATE table SET column=data WHERE column=value;
+          UPDATE table SET column=data, column=data WHERE column=value;
+          UPDATE table SET column=data WHERE column=value AND column=value;
+Deleting: DELETE FROM table WHERE column=value;
+          DELETE FROM table WHERE column>value AND column<value;
+
+
+2. Explain the structure for each type of command.
+
+Adding: INSERT INTO table(column) VALUES (data);
+  "INSERT INTO" defines which table and where to insert the values that will follow. The data after "VALUES" will be added as a row into the columns defined previously with the "INSERT INTO" statement.
+
+Updating: UPDATE table SET column=data WHERE column=value;
+  "UPDATE" defines which table to target for the update. "SET" specifies which column to update and the new data. "WHERE" finds the correct row with a specific column value for the update.
+
+Deleting: DELETE FROM table WHERE column=value;
+  "DELETE FROM" targets the table. "WHERE" finds the correct row with a specific column value to delete.
+
+
+3. What are some the data types that can be used in tables? Give a real world example of each.
+
+numeric: can be used to store monetary values. An example would be to set prices for an online store.
+
+text: stores strings of any length. It can be used to store descriptions of products on an online store.
+
+timestamp: stores data and time. This data type can be used to hold the time when a sale was made on an online store.
+
+boolean: stores a value of "TRUE" or "FALSE". For an example, we can store a true or false value on a product listing to determine whether the listing is inactive or active.
+
+
+4. Think through how to create a new table to hold a list of people invited to a wedding. This table needs to have first and last name, whether they sent in their RSVP, the number of guests they are bringing, and the number of meals (1 for adults and 1/2 for children).
+
+  Which data type would you use to store each of the following pieces of information?
+    First and last name: text
+    Whether they sent in their RSVP: boolean
+    Number of guests: integer
+    Number of meals: numeric
+
+  Write a command that makes the table to track the wedding.
+    CREATE TABLE guest_list (
+      name text,
+      rsvp boolean,
+      guests integer,
+      meals numeric(2, 1)
+    );
+
+  Using the table we just created, write a command that adds a column to track whether they were sent a thank you card.
+    ALTER TABLE guest_list ADD COLUMN card boolean;
+
+  You have decided to move the data about the meals to another table, so write a command to remove the column storing the number meals from the wedding table.
+    ALTER TABLE guest_list DROP COLUMN meals;
+
+  The guests are going to need a place to sit at the reception, so write a command that adds a column for table number.
+    ALTER TABLE guest_list ADD COLUMN table_number integer;
+
+  The wedding is over and we do not need to keep this information, so write a command that deletes the wedding table from the database.
+    DROP TABLE guest_list;
+
+
+5. Write a command to make a new table to hold the books in a library with the columns ISBN, title, author, genre, publishing date, number of copies, and available copies.
+  CREATE TABLE books (
+    isbn numeric(13),
+    title text,
+    author text,
+    genre text,
+    publishing_date date,
+    number_of_copies integer,
+    available_copies integer
+  );
+
+  Find three books and add their information to the table.
+    INSERT INTO books (isbn, title, author, genre, publishing_date, number_of_copies, available_copies)
+    VALUES
+    (9788970120676, "The Catcher in the Rye", "J. D. Salinger", "Fiction", 07/16/1951, 5, 5),
+    (9788931001990, "To Kill A Mockingbird", "Harper Lee", "Fiction", 07/11/1960, 7, 0),
+    (9781626865037, "Les Miserables", "Victor Hugo", "Fiction", 12/12/1982, 3, 1);
+
+  Someone has just checked out one of the books. Change the available copies column to 1 fewer.
+    UPDATE books SET available_copies=4 WHERE title="The Catcher in the Rye";
+
+  Now one of the books has been added to the banned books list. Remove it from the table.
+    DELETE FROM books WHERE isbn=9781626865037;
+
+6. Write a command to make a new table to hold spacecrafts.
+Information should include id, name, year launched, country of origin, a brief description of the mission, orbiting body, if it is currently operating, and approximate miles from Earth.
+In addition to the table creation, provide commands that perform the following operations:
+
+  CREATE TABLE spacecraft (
+    id integer,
+    name text,
+    year_launched integer,
+    country_of_origin text,
+    description text,
+    orbiting_body text,
+    operating boolean,
+    miles_from_earth decimal(20, 3)
+  );
+
+    Add 3 non-Earth-orbiting satellites to the table.
+      INSERT INTO spacecraft (id, name, year_launched, country_of_origin, description, orbiting_body, operating, miles_from_earth)
+      VALUES
+      (1, "Wookie", 3012, "Kashyyyk", "Find the Millennium Falcon", "Jakku", TRUE, 387022304.904),
+      (2, "Skywalker", 2985, "Tatooine", "Become a jedi", "Naboo", TRUE, 45089346094.938),
+      (3, "Rey", 3123, "Jakku", "Get lunch", "Death Star", TRUE, 384092044.498);
+
+    Remove one of the satellites from the table since it has just been crashed into the planet.
+      DELETE FROM spacecraft WHERE id=2;
+
+    Edit another satellite because it is no longer operating and change the value to reflect that.
+      UPDATE spacecraft SET operating=FALSE WHERE id=1;
+
+
+7. Write a command to make a new table to hold the emails in your inbox.
+This table should include an id, the subject line, the sender, any additional recipients, the body of the email, the timestamp, whether or not it’s been read, and the id of the email chain it’s in.
+Also provide commands that perform the following operations:
+
+  CREATE TABLE emails (
+    id integer,
+    subject text,
+    sender text,
+    recipients text,
+    body text,
+    timestamp timestamp,
+    read boolean,
+    chain_id integer
+  );
+
+
+  Add 3 new emails to the inbox.
+  INSERT INTO emails(id, subject, sender, body, timestamp, read, chain_id)
+  VALUES
+  (34, "Where are you?", "mike@email.com", "We've been looking for you.", TIMESTAMP '1972-09-14 12:03:01', FALSE, 76),
+  (87, "I'm hungry", "lucas@email.com", "Let's grab some pizza.", TIMESTAMP '1972-03-14 14:21:00', TRUE, 52),
+  (91, "Let's go!", "will@email.com", "Great! Meet you there in 20.", TIMESTAMP '1972-03-14 14:23:01', FALSE, 52);
+
+  You’ve just deleted one of the emails, so write a command to remove the row from the inbox table.
+    DELETE FROM emails WHERE id=34;
+
+  You started reading an email but just heard a crash in another room. Mark the email as unread before investigating, so you can come back to it later.
+    UPDATE emails SET read=FALSE WHERE id=87;

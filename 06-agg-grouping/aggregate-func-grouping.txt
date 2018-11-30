@@ -1,0 +1,181 @@
+1. List 5 aggregate functions and explain, in your own words, what they are for. Include a real world example for each.
+
+  SUM: Return the total of the column.
+   Find the total number of units in a warehouse.
+   SELECT SUM(quantity) FROM inventory;
+
+   AVG: Return the average of the column.
+   Find the average price of inventory in a warehouse.
+   SELECT AVG(price) FROM inventory;
+
+   COUNT: Return the total number of rows in a column.
+   Find the number of items in a warehouse.
+   SELECT COUNT(item) FROM inventory;
+
+   MIN: Return the smallest value in a column.
+   Find the least expensive item in inventory.
+   SELECT MIN(price) FROM inventory;
+
+   MAX: Return the largest value in a column.
+   Find the most expensive item in inventory.
+   SELECT MAX(price) FROM inventory;
+
+2. Given this donations table, write queries and include the output for the following:
+
+  The total of all donations received in the past year.
+
+    SELECT SUM(amount) FROM donations;
+
+    sum
+    993
+
+  The total donations over time per donor (e.g. if Tanysha has donated 3 times with the amounts $25, $30, and $50, then the result would be | Tanysha | 105 |).
+
+    SELECT SUM(amount) as total, donor FROM donations GROUP BY donor;
+
+    total     donor
+    20        Samwell
+    10        Daario
+    75        Brienne
+    120       Tyrion
+    70        Petyr
+    45        Melisandre
+    25        Bran
+    50        Tormund
+    30        Ygritte
+    7         Gilly
+    25        Jon
+    60        Arya
+    20        Theon
+    20        Bronn
+    120       Margaery
+    90        Missandei
+    33        Sansa
+    173       Daenerys
+
+  The average donation per donor.
+
+    SELECT AVG(amount) as average_donation, donor FROM donations GROUP BY donor;
+
+    average_donation    donor
+    20                  Samwell
+    10                  Daario
+    75                  Brienne
+    40                  Tyrion
+    70                  Petyr
+    45                  Melisandre
+    25                  Bran
+    50                  Tormund
+    30                  Ygritte
+    7                   Gilly
+    25                  Jon
+    20                  Arya
+    10                  Theon
+    20                  Bronn
+    120                 Margaery
+    22.5                Missandei
+    33                  Sansa
+    86.5                Daenerys
+
+  The number of donations over $100.
+
+    SELECT COUNT(amount) FROM donations WHERE amount > 100;
+
+    count
+    2
+
+  The largest donation received in a single instance from a single donor.
+
+    SELECT MAX(amount) AS max_donation, donor FROM donations GROUP BY donor
+    ORDER BY max_donation DESC LIMIT 1;
+
+    max_donation    donor
+    120             Margaery
+
+  The smallest donation received.
+
+    SELECT MIN(amount) FROM donations;
+
+    min
+    5
+
+3. How would you determine the display order of data returned by your SELECT statement?
+
+  I would use the ORDER BY clause and select a specific column to display the results according to the values in the column. By default, the ORDER BY clause will sort the data by ascending order. By adding DESC to the end of the cause, I can sort the data in descending order as well.
+
+4. What is a real world situation where you would use OFFSET?
+
+  On a website, if I would like to limit the number of search results on a page, the OFFSET   clause will be necessary to paginate the pages.
+
+5. Why is it important to use ORDER BY when limiting your results?
+
+  It is important to order the data when using limits because the results will be meaningful. If the data is not ordered, we would be selecting random groups of data.
+
+6. What is the difference between HAVING and WHERE?
+
+  WHERE statements are used to filter out rows in a table. The conditions in WHERE statements compare the raw data in the columns. HAVING statements remove groups of data from a result through a condition. The HAVING statements perform filters on SELECT statements after aggregate clauses.
+
+7. Correct the following SELECT statement:
+
+  SELECT SUM (amount) AS total, id
+  FROM payment
+  HAVING total > 200;
+
+8. Follow the instructions for the scenarios below:
+
+  Given this [cats][http://sqlfiddle.com/#!17/bc4d2] table from the previous checkpoint, list all cats organized by intake date.
+
+    SELECT * FROM cats ORDER BY intake_date;
+
+    id     name        gender    age   intake_date     adoption_date
+    1      Mushi       M         1     2016-01-09      2016-03-22
+    2      Seashell    F         7     2016-01-09      (null)
+    3      Azul        M         3     2016-01-11      2016-04-17
+    4      Victoire    M         7     2016-01-11      2016-09-01
+    5      Nala        F         1     2016-01-12      (null)
+
+  Given this adoptions table, determine the 5 most recent adoptions to be featured for a social media promotion called "Happy Tails" which lists recent successful adoptions.
+
+    SELECT * FROM cats WHERE adoption_date IS NOT NULL ORDER BY adoption_date DESC LIMIT 5;
+
+    id   name        gender    age    intake_date    adoption_date
+    4    Victoire    M         7      2016-01-11     2016-09-01
+    3    Azul        M         3      2016-01-11     2016-04-17
+    1    Mushi       M         1      2016-01-09     2016-03-22
+
+  There is a potential adopter looking for an adult female cat. In the most efficient way possible, list all female cats 2 or more years old from the cats table.
+
+    id   name       gender    age    intake_date    adoption_date
+    2    Seashell   F         7      2016-01-09     (null)
+
+  From the donations table (from problem #2), find the top 5 donors with the highest cumulative donation amounts to be honored as “Platinum Donors”.
+
+    SELECT SUM(amount) as total, donor
+    FROM donations
+    GROUP BY donor
+    ORDER BY total DESC LIMIT 5;
+
+    total    donor
+    173      Daenerys
+    120      Margaery
+    120      Tyrion
+    90       Missandei
+    75       Brienne
+
+  From the donations table (from problem #2), find donors 6-15 with the next highest cumulative donation amounts to be honored as “Gold Donors”.
+
+    SELECT SUM(amount) as total, donor
+    FROM donations GROUP BY donor
+    ORDER BY total DESC LIMIT 10 OFFSET 5;
+
+    total   donor
+    70      Petyr
+    60      Arya
+    50      Tormund
+    45      Melisandre
+    33      Sansa
+    30      Ygritte
+    25      Jon
+    25      Bran
+    20      Samwell
+    20      Theon

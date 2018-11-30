@@ -1,0 +1,176 @@
+1. Write out a generic SELECT statement.
+
+  SELECT <column>
+  FROM <table>
+  WHERE <condition>;
+
+
+2. Create a fun way to remember the order of operations in a SELECT statement, such as a mnemonic.
+
+  SELECT - Spotted
+  FROM - Fast
+  WHERE - Wagon
+
+3. Given this dogs table, write queries to select the following pieces of data:
+  Display the name, gender, and age of all dogs that are part Labrador.
+
+  SELECT name, gender, age FROM dogs WHERE breed LIKE "%labrador%";
+  name  | gender | age
+  --------+--------+-----
+  Boujee | F      |   3
+  Marley | M      |   0
+  (2 rows)
+
+  Display the ids of all dogs that are under 1 year old.
+
+  SELECT id FROM dogs WHERE age < 1;
+  id
+   -------
+   10002
+   10004
+   (2 rows)
+
+  Display the name and age of all dogs that are female and over 35lbs.
+
+  SELECT name, age FROM dogs WHERE gender = 'F' AND weight > 35;
+  name  | age
+   --------+-----
+    Boujee |   3
+   (1 row)
+
+  Display all of the information about all dogs that are not Shepherd mixes.
+
+  SELECT * FROM dogs WHERE breed NOT LIKE "%shepherd%";
+  id   |   name    | gender | age | weight |       breed        | intake_date | in_foster
+   -------+-----------+--------+-----+--------+--------------------+-------------+------------
+    10001 | Boujee    | F      |   3 |     36 | labrador poodle    | 2017-06-22  |
+    10002 | Munchkin  | F      |   0 |      8 | dachsund chihuahua | 2017-01-13  | 2017-01-31
+    10004 | Marley    | M      |   0 |     10 | labrador           | 2017-05-04  | 2016-06-20
+   10006 | Marmaduke | M      |   7 |    150 | great dane         | 2016-03-22  | 2016-05-15
+   10007 | Rosco     | M      |   5 |    180 | rottweiler         | 2017-04-01  |
+   (5 rows)
+
+  Display the id, age, weight, and breed of all dogs that are either over 60lbs or Great Danes.
+
+  SELECT id, age, weight, breed FROM dogs WHERE weight > 60 OR breed = "great dane";
+  id   | age | weight |   breed
+   -------+-----+--------+------------
+   10006 |   7 |    150 | great dane
+   10007 |   5 |    180 | rottweiler
+   (2 rows)
+
+4. Given this cats table, what records are returned from these queries?
+  SELECT name, adoption_date FROM cats;
+
+  name        adoption_date
+  Mushi        2016-03-22
+  Seashell    NULL
+  Azul        2016-04-17
+  Victoire    2016-09-01
+  Nala        NULL
+
+  SELECT name, age FROM cats;
+
+  name        age
+  Mushi        1
+  Seashell    7
+  Azul        3
+  Victoire    7
+  Nala        1
+
+5. From the cats table, write queries to select the following pieces of data.
+
+  Display all the information about all of the available cats.
+
+  SELECT * FROM cats;
+
+  Display the name and sex of all cats who are 7 years old.
+
+  SELECT DISTINCT age FROM cats;
+
+  Find all of the names of the cats, so you don’t choose duplicate names for new cats.
+
+  SELECT name FROM cats;
+
+6. List each comparison operator and explain, in your own words, when you would use it. Include a real world example for each.
+
+  >: Greater than, used when comparing 2 values
+   Find the name of users who are older than 18 years old.
+   SELECT name FROM users WHERE age > 18;
+
+   <: Less than, used when comparing 2 values
+   Find the name of users who are younger than 18 years old.
+   SELECT name FROM users WHERE age < 18;
+
+   =: Equal to, used when comparing 2 values
+   Find the name of users who are 18 years old.
+   SELECT name FROM users WHERE age = 18;
+
+   <=: Less than or equal to, used when comparing 2 values
+   Find the name of users who are 18 years old and younger.
+   SELECT name FROM users WHERE age <= 18;
+
+   >=: Greater than or equal to, used when comparing 2 values
+   Find the name of users who are 18 years old and older
+   SELECT name FROM users WHERE age >= 18;
+
+   !=: Not equal to, used when comparing 2 values
+   Find the name of users who are not 18 years old.
+   SELECT name FROM users WHERE age != 18;
+
+   <>: Greater than or less than, used when comparing 2 values; It is similar to != since all data     that are greater than or less than the value will be returned.
+   Find the name of users who are older or younger than 18 years old.
+   SELECT name FROM users WHERE age <> 18;
+
+   LIKE: Used to pattern match a string
+   Find all users whose name starts with the letter 'C'.
+   SELECT * FROM users WHERE name LIKE "C%";
+
+   BETWEEN: Used when querying a value that is between two conditions
+   Find the name of users who are older than 18, but less than 40.
+   SELECT name FROM users WHERE age BETWEEN 18 AND 40;
+
+   IS DISTINCT FROM: Similar to the <> operator, but it can also deal with null values
+   Find the name of users who are not 'Chris'.
+   SELECT name FROM users WHERE name IS DISTINCT FROM 'Chris';
+
+   IS TRUE / IS FALSE: Used to evaluate an expression when the input could be null. Always returns     true or false.
+   Find all users who have not paid.
+   SELECT * FROM users WHERE paid IS FALSE;
+
+   IS NULL: Determines if the contents of the cell is null.
+   Find all users who have not inputted their age.
+   SELECT * FROM users WHERE age IS NULL
+
+   AND: Requires both expressions to be true
+   Find all users who are 18 and paid.
+   SELECT * FROM users WHERE age = 18 AND paid IS TRUE;
+
+   OR: Requires one of the expressions to be true
+  Find all users who are over 18 or male.
+   SELECT * FROM users WHERE age > 18 OR gender = 'M';
+
+   NOT: Requires expression to be false
+   Find all users who did not pay.
+   SELECT * FROM users WHERE NOT paid = 'TRUE';
+
+7. From the cats table, what data is returned from these queries?
+  SELECT name FROM cats WHERE gender = ‘F’;
+
+  name
+  Seashell
+  Nala
+
+  SELECT name FROM cats WHERE age <> 3;
+
+  name
+   Mushi
+   Seashell
+   Victoire
+   Nala
+
+  SELECT ID FROM cats WHERE name != ‘Mushi’ AND gender = ‘M’;
+
+  id
+  3
+  4

@@ -86,7 +86,7 @@
 
   Display the name and sex of all cats who are 7 years old.
 
-  SELECT DISTINCT age FROM cats;
+  SELECT name, gender FROM cats WHERE age = 7;
 
   Find all of the names of the cats, so you don’t choose duplicate names for new cats.
 

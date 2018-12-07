@@ -1,0 +1,246 @@
+1. How do you find related data that is held in two separate data tables?
+
+  I would use a JOIN statement and match the primary key and foreign key from each table and make a combine table with the selected data.
+
+2. Explain, in your own words, the difference between a CROSS JOIN, INNER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN, and FULL OUTER JOIN. Give a real world example for each.
+
+  CROSS JOIN: Combines two tables and returns all combinations of rows and columns. Example, find all combinations of clay, first glaze, and second glaze for ceramic pieces.
+
+  INNER JOIN: Returns a joined table that has rows for records that fulfills the condition in both tables. Example, find the products from inventory that are being offered on the Amazon marketplace.
+
+  LEFT OUTER JOIN: Returns a joined table that has a row for every record on the left table with a matching record from the right table or null if match is not found. Example, find the products that are bring offered on Amazon and identify the ones that do not have an offer.
+
+  RIGHT OUTER JOIN: Returns a joined table that has a row for every record on the right table with a matching record from the left table or null if match is not found. Examples, find all the products that are offered on Amazon and identify which items are not available in inventory.
+
+  FULL OUTER JOIN: Returns a joined table that has a row for for every record on the left and right table with matching records from both tables. Null is inserted instead if a matching record is not found. Example, in a doctor's office, find all patients, their appointment dates and appointment dates that are not filled.
+
+3. Define primary key and foreign key. Give a real world example for each.
+
+  A primary key is unique identifier for a record. A primary key can only be used in a table once. A foreign key is a identifier that references to a primary key. This can be used more than once in a table. For an example, in a grocery store, a primary key may be used to uniquely identify the various sections such as dairy, produce, and deli. The products at the grocery store can have a foreign key that matches them to each of the different sections. The cheese product can have a foreign key for the dairy section
+
+4. Define aliasing.
+
+  Aliasing is used to abbreviate the names of the table in a query.
+
+5. Change this query so that you are using aliasing:
+
+  SELECT p.name, c.salary, c.vacation_days
+  FROM professor AS p
+  JOIN compensation AS c
+  ON p.id = c.professor_id;
+
+6. Why would you use a NATURAL JOIN? Give a real world example.
+
+  A NATURAL JOIN can be used to combine two tables of data into one. For an example, there can be a table of products in inventory and a table with a list of vendor details. If I would like to have a single table with the products and the vendor details, NATURAL JOIN can match the vendor_id column in both tables and display a table with the combined columns.
+
+7. Using this Employee schema and data, write queries to find the following information:
+  All employees with their shifts if they have any. Also include any unscheduled shifts.
+
+    SELECT e.name, shifts.date, shifts.start_time, shifts.end_time
+    FROM employees AS e
+    LEFT JOIN scheduled_shifts AS s ON e.id = s.employee_id
+    LEFT JOIN shifts ON s.shift_id = shifts.id;
+
+    name                date        start_time    end_time
+    Hermione Granger    1998-03-09    08:00:00      16:00:00
+    Hermione Granger    1998-03-10    08:00:00      16:00:00
+    Hermione Granger    1998-03-11    08:00:00      16:00:00
+    Hermione Granger    1998-03-12    08:00:00      16:00:00
+    Hermione Granger    1998-03-13    08:00:00      16:00:00
+    Ronald Weasley      1998-03-10    12:00:00      16:00:00
+    Ronald Weasley      1998-03-12    12:00:00      16:00:00
+    Luna Lovegood       1998-03-09    12:00:00      16:00:00
+    Luna Lovegood       1998-03-11    12:00:00      16:00:00
+    Luna Lovegood       1998-03-13    12:00:00      16:00:00
+    Draco Malfoy        1998-03-11    16:00:00      20:00:00
+    Draco Malfoy        1998-03-12    16:00:00      20:00:00
+    Draco Malfoy        1998-03-13    16:00:00      20:00:00
+    Padma Patil         1998-03-09    12:00:00      20:00:00
+    Padma Patil         1998-03-10    12:00:00      20:00:00
+    Padma Patil         1998-03-11    12:00:00      20:00:00
+    Padma Patil         1998-03-09    08:00:00      12:00:00
+    Padma Patil         1998-03-10    08:00:00      12:00:00
+    Padma Patil         1998-03-11    08:00:00      12:00:00
+    Cho Chang           1998-03-12    12:00:00      20:00:00
+    Cho Chang           1998-03-13    12:00:00      20:00:00
+    Dean Thomas         1998-03-09    16:00:00      20:00:00
+    Dean Thomas         1998-03-10    16:00:00      20:00:00
+    Neville Longbottom  (null)        (null)        (null)
+    Cedric Diggory      (null)        (null)        (null)
+
+8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+  All volunteers. If the volunteer is fostering a dog, include each dog as well.
+
+    SELECT v.first_name, v.last_name, d.name, d.breed, d.intake_date
+    FROM volunteers AS v
+    LEFT JOIN dogs AS d ON v.foster_dog_id = d.id;
+
+    first_name    last_name     name        breed                 intake_date
+    Rubeus        Hagrid        Munchkin    dachsund chihuahua    2017-01-13
+    Marjorie      Dursley       Marmaduke   great dane            2016-03-22
+    Sirius        Black         (null)      (null)                (null)
+    Remus         Lupin         (null)      (null)                (null)
+    Albus         Dumbledore    (null)      (null)                (null)
+
+  The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
+
+    SELECT cats.name, adopters.first_name, adopters.last_name, ca.date
+    FROM cat_adoptions AS ca
+    JOIN cats ON ca.cat_id = cats.id
+    JOIN adopters ON ca.adopter_id = adopters.id
+    WHERE ca.date > CURRENT_DATE - INTERVAL '30 DAYS';
+
+    name      first_name    last_name    date
+    Mushi     Arabella      Figg         2018-03-16
+    Victoire  Argus         Filch        2018-03-21
+
+  Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+
+    SELECT a.first_name, a.last_name, dogs.name
+    FROM dog_adoptions AS da
+    RIGHT JOIN adopters AS a ON da.adopter_id = a.id
+    CROSS JOIN dogs
+    WHERE da.adopter_id IS NULL
+    AND dogs.in_foster IS NULL;
+
+    first_name    last_name    name
+    Hermione      Granger      Boujee
+    Hermione      Granger      Munchkin
+    Hermione      Granger      Marley
+    Hermione      Granger      Lassie
+    Hermione      Granger      Marmaduke
+    Hermione      Granger      Rosco
+    Arabella      Figg         Boujee
+    Arabella      Figg         Munchkin
+    Arabella      Figg         Marley
+    Arabella      Figg         Lassie
+    Arabella      Figg         Marmaduke
+    Arabella      Figg         Rosco
+
+
+  Lists of all cats and all dogs who have not been adopted.
+
+    SELECT dogs.name
+    FROM dog_adoptions
+    RIGHT JOIN dogs ON dog_adoptions.dog_id = dogs.id
+    WHERE dog_adoptions.dog_id IS NULL;
+
+    name
+    Boujee
+    Munchkin
+    Marley
+    Lassie
+    Marmaduke
+
+    SELECT cats.name
+    FROM cat_adoptions
+    RIGHT JOIN cats ON cat_adoptions.cat_id = cats.id
+    WHERE cat_adoptions.cat_id IS NULL;
+
+    name
+    Seashell
+    Nala
+
+  Volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all dogs who are not currently in foster homes.
+
+    SELECT volunteers.first_name as volunteer_first_name, volunteers.last_name as volunteer_last_name, dogs.name as dogs_name
+    FROM volunteers
+    FULL OUTER JOIN dogs ON volunteers.foster_dog_id = dogs.id;
+
+    volunteer_first_name    volunteer_last_name     dogs_name
+    (null)                  (null)                  Boujee
+    Rubeus                  Hagrid                  Munchkin
+    (null)                  (null)                  Marley
+    (null)                  (null)                  Lassie
+    Marjorie                Dursley                 Marmaduke
+    (null)                  (null)                  Rosco
+    Sirius                  Black                   (null)
+    Remus                   Lupin                   (null)
+    Albus                   Dumbledore              (null)
+
+  The name of the person who adopted Rosco.
+
+    SELECT adopters.first_name, adopters.last_name
+    FROM dog_adoptions
+    JOIN dogs ON dog_adoptions.dog_id = dogs.id
+    JOIN adopters ON dog_adoptions.adopter_id = adopters.id
+    WHERE dogs.name = 'Rosco';
+
+    first_name    last_name
+    Argus         Filch
+
+9. Using this Library schema and data, write queries applying the following scenarios:
+  To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+    SELECT patrons.name, holds.rank
+    FROM holds
+    JOIN patrons ON holds.patron_id = patrons.id
+    JOIN books ON holds.isbn = books.isbn
+    WHERE books.title = 'Advanced Potion-Making'
+    ORDER BY holds.rank;
+
+    name              rank
+    Terry Boot        1
+    Cedric Diggory    2
+
+  Make a list of all book titles and denote whether or not a copy of that book is checked out.
+
+    SELECT books.title,
+    CASE WHEN t.checked_in_date IS NULL THEN 'Checked out'
+    WHEN t.checked_in_date IS NOT NULL THEN 'Available'
+    END AS status
+    FROM books
+    LEFT JOIN (
+    SELECT transactions.isbn, transactions.checked_in_date
+    FROM transactions
+    ORDER BY transactions.checked_in_date ASC LIMIT 1
+    ) as t on books.isbn = t.isbn;
+
+    title                                      status
+    Hogwarts: A History                        Available
+    Fantastic Beasts and Where to Find Them    Checked out
+    Advanced Potion-Making                     Checked out
+
+  In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out time by book name in the past month.
+
+    SELECT SUM(transactions.checked_in_date - transactions.checked_out_date) AS checked_out_time, books.title
+    FROM transactions
+    JOIN books ON transactions.isbn = books.isbn
+    WHERE transactions.checked_out_date > CURRENT_DATE - INTERVAL '30 DAYS'
+    GROUP BY books.title
+    ORDER BY checked_out_time DESC;
+
+    checked_out_time     title
+    (null)               Advanced Potion-Making
+    5                    Fantastic Beasts and Where to Find Them
+
+  In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+
+    SELECT books.title, MAX(transactions.checked_out_date) AS last_checked_out
+    FROM books
+    JOIN transactions
+    ON transactions.isbn = books.isbn
+    GROUP BY books.title
+    HAVING MAX(transactions.checked_out_date) < CURRENT_DATE - INTERVAL '5 YEARS';
+
+    title                  last_checked_out
+    Hogwarts: A History    2012-04-04
+
+  List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+
+    SELECT DISTINCT patrons.name, x.title AS checked_out_book
+    FROM patrons
+    LEFT JOIN (
+    SELECT books.title, transactions.patron_id
+    FROM books
+    RIGHT JOIN transactions ON transactions.isbn = books.isbn
+    WHERE transactions.checked_in_date IS NULL
+    ) AS x ON x.patron_id = patrons.id
+    ORDER BY patrons.name;
+
+    name               checked_out_book
+    Cedric Diggory     Fantastic Beasts and Where to Find Them
+    Cho Chang          (null)
+    Hermione Granger   (null)
+    Padma Patil        (null)
+    Terry Boot         Advanced Potion-Making

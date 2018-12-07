@@ -1,0 +1,65 @@
+1. List 5 aggregate functions and explain, in your own words, what they are for. Include a real world example for each.
+
+  SUM: Return the total of the column.
+   Find the total number of units in a warehouse.
+   SELECT SUM(quantity) FROM inventory;
+
+   AVG: Return the average of the column.
+   Find the average price of inventory in a warehouse.
+   SELECT AVG(price) FROM inventory;
+
+   COUNT: Return the total number of rows in a column.
+   Find the number of items in a warehouse.
+   SELECT COUNT(item) FROM inventory;
+
+   MIN: Return the smallest value in a column.
+   Find the least expensive item in inventory.
+   SELECT MIN(price) FROM inventory;
+
+   MAX: Return the largest value in a column.
+   Find the most expensive item in inventory.
+   SELECT MAX(price) FROM inventory;
+
+
+3. How would you determine the display order of data returned by your SELECT statement?
+
+  I would use the ORDER BY clause and select a specific column to display the results according to the values in the column. By default, the ORDER BY clause will sort the data by ascending order. By adding DESC to the end of the cause, I can sort the data in descending order as well.
+
+4. What is a real world situation where you would use OFFSET?
+
+  On a website, if I would like to limit the number of search results on a page, the OFFSET   clause will be necessary to paginate the pages.
+
+5. Why is it important to use ORDER BY when limiting your results?
+
+  It is important to order the data when using limits because the results will be meaningful. If the data is not ordered, we would be selecting random groups of data.
+
+6. What is the difference between HAVING and WHERE?
+
+  WHERE statements are used to filter out rows in a table. The conditions in WHERE statements compare the raw data in the columns. HAVING statements remove groups of data from a result through a condition. The HAVING statements perform filters on SELECT statements after aggregate clauses.
+
+7. Correct the following SELECT statement:
+
+  SELECT SUM(amount) AS total_amount, id FROM payment
+  WHERE total_amount >  200;
+
+8. Follow the instructions for the scenarios below:
+
+  Given this [cats][http://sqlfiddle.com/#!17/bc4d2] table from the previous checkpoint, list all cats organized by intake date.
+
+    SELECT * FROM cats ORDER BY intake_date;
+
+  Given this adoptions table, determine the 5 most recent adoptions to be featured for a social media promotion called "Happy Tails" which lists recent successful adoptions.
+
+    SELECT * FROM adoptions ORDER BY date LIMIT 5;
+
+  There is a potential adopter looking for an adult female cat. In the most efficient way possible, list all female cats 2 or more years old from the cats table.
+
+    SELECT * FROM cats WHERE age >= 2 GROUP BY gender HAVING gender = 'F';
+
+  From the donations table (from problem #2), find the top 5 donors with the highest cumulative donation amounts to be honored as “Platinum Donors”.
+
+    SELECT donor FROM donations GROUP BY donor ORDER BY SUM(amount) DESC LIMIT 5;
+
+  From the donations table (from problem #2), find donors 6-15 with the next highest cumulative donation amounts to be honored as “Gold Donors”.
+
+    SELECT donor FROM donations GROUP BY donor ORDER BY SUM(amount) DESC LIMIT 10 OFFSET 5;

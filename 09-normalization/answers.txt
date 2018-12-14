@@ -1,0 +1,88 @@
+1. In your own words, explain the benefits of normalization. Include a real-world scenario where normalization is necessary.
+	Normalization is used to organize and group data into various tables to avoid redundancy. When an attribute is dependent on another attribute that is not the primary key, it would be beneficial to separate the data into different tables. For an example, in an online store, there may be a database for orders to fulfill. This database may have a field for the customer id, item ordered, and quantity. However, it is not necessarily required to have an attribute field for the item price. The item price is dependent on the item ordered. Whenever, a customer orders the item, the item price will be automatically filled with the same data. This is redundant and inefficient. A more efficient system can be created with normalization by creating a table for the orders and a separate table for the item details.
+
+2. List and explain the different normal forms and how they relate to one another, with regard to your real-world scenario in the first question.
+
+First normal form (1NF): A column cannot have multiple values.
+	A customer can order multiple items. Instead of inserting all of the items in one item column, we can create a different record for each item with the same order id.
+
+Second normal form (2NF): An attribute cannot be dependent on another attribute that is not the whole key.
+	Our order table can have a primary key that has the order id and customer id. Next, we can have customer address and phone number fields in the table. Unfortunately, these attributes only depend on the customer id and not the order id. Therefore, we will need to create a customers table to satisfy the 2NF rule.
+
+Third normal form (3NF): An attribute cannot be dependent on another attribute that is not the primary key.
+	An order can have many sections. I would have a table for orders that only contains an order id, date, customer id, and item id. All of the attributes are dependent on the single primary key, order id. Then, I would create separate tables for the customer information and the item details.
+
+Boyce Codd normal form (BCNF): Similar to 3NF, but all attributes must be dependent on super keys.
+	To satisfy BCNF requirements, I would make sure that all of my tables only contain attributes that depend on super keys. For my items table, I might have an id, item name, item SKU, and vendor name. Since the vendor name depends of the item SKU and not the super key, I would create a new item SKU id that will contain the vendor name.
+
+All of the normal forms gradually become more specific and require more tables to be created.
+
+
+3. This student_records table contains students and their grades in different subjects. The schema is already in first normal form (1NF). Convert this schema to the third normal form (3NF) using the techniques you learned in this checkpoint.
+
+  CREATE TABLE students (
+    "id"       INTEGER,
+    "student_email"  VARCHAR(24),
+    "student_name"   VARCHAR(9),
+
+    PRIMARY KEY ("id")
+  );
+
+  CREATE TABLE professors (
+    "id"       INTEGER,
+    "professor_name" VARCHAR(9),
+    "subject"        VARCHAR(11),
+
+    PRIMARY KEY ("id")
+  );
+
+  CREATE TABLE student_records (
+    "id"       INTEGER,
+    "student_id"     INTEGER,
+    "professor_id"   INTEGER,
+    "grade"          VARCHAR(1),
+
+    FOREIGN KEY ("student_id")
+    REFERENCES "students" ("id")
+    ON DELETE CASCADE,
+
+    FOREIGN KEY ("professor_id")
+    REFERENCES "professors" ("id")
+    ON DELETE CASCADE,
+
+    PRIMARY KEY ("id")
+  );
+
+  INSERT INTO students
+      ("id", "student_email", "student_name")
+      VALUES
+      ( 1,    'john.b20@hogwarts.edu',    'John B'),
+      ( 2,    'sarah.s20@hogwarts.edu',   'Sarah S'),
+      ( 3,    'martha.l20@hogwarts.edu',  'Martha L'),
+      ( 4,    'james.g20@hogwarts.edu',   'James G'),
+      ( 5,    'stanley.p20@hogwarts.edu', 'Stanley P');
+
+  INSERT INTO professors
+      ("id", "professor_name", "subject")
+      VALUES
+      ( 2,             'William C',      'Philosophy'),
+      ( 3,             'Mark W',         'Mathematics'),
+      ( 1,             'Natalie M',      'Economics');
+
+  INSERT INTO student_records
+      ("id", "student_id", "professor_id", "grade")
+      VALUES
+      ( 1,    1,   2,  'A'),
+      ( 2,    2,   2,  'C'),
+      ( 3,    3,   1,  'A'),
+      ( 4,    4,   3,  'B'),
+      ( 5,    5,   1,  'B');
+
+4. In your own words, explain the potential disadvantages of normalizing the data above. What are its trade-offs? Submit your findings in the submission table and discuss them with your mentor in your next session.
+	In normalization, writing data becomes more efficient since there are fewer redundant data to apply. However, reading data becomes less efficient. If the desired data spans several tables, a query with join statements is needed and join statements can slow the data reading process.
+
+5. Looking at the tables you have normalized. If you need to denormalize to improve query performance or speed up reporting, how would you carry out denormalization for this database design? Submit potential strategies in the submission tab and discuss them with your mentor in your next session.
+	We can combine the student records table and the professors table. Each grade needs to show the subject. Otherwise, the data is useless. Since we will need to constantly include join statements to access the subject in this normalized version, it would be appropriate to combine the two tables. There will be redundant data, but the data reading will be more efficient. Alternately, we can add a subject column to the student records.
+
+6. Explore the trade-offs between data normalization and denormalization in this scenario, submit your findings in the submission tab, and discuss them with your mentor in your next session.
+	With normalization and denormalization, we need to analyze how the data is being used which require a strong understanding of the purpose of the database. If a particular set of data is constantly being accessed together, then it would be more logical to have the data available on the same table which may be a denormalized version of the database. The answer to the previous question is a good example. Generally, students will want to know which grade corresponds to a subject. Therefore, you will want to keep the grade and the subject on the same table.

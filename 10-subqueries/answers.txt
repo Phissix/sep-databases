@@ -1,0 +1,248 @@
+1. Explain a subquery in your own words.
+
+A subquery is a SELECT statement within a SELECT statement. Subqueries can be used to pull data from a query to use within the main query.
+
+2. Where can you use a subquery within a SELECT statement?
+
+A subquery can be used within a SELECT, FROM or WHERE clause.
+
+3. When would you employ a subquery?
+
+I would use a subquery to pull specific data to use within a main query. Or, I would also use one to retrieve data through an aggregate function without applying the function to the main query.
+
+4. Explain a row constructor in your own words.
+
+Row constructors are used to compare two or more columns for comparison in a subquery. The row constructor will compare the values to the columns in a table and either return the row or return null.
+
+5. What happens if a row in the subquery result provides a NULL value to the comparison?
+
+The comparison will result in null.
+
+6. What are the ways to use a subquery within a WHERE clause? If you can't remember them, do these flashcards until you can.
+
+EXISTS: Returns true of the subquery produces at least one row
+IN: Returns true of the subquery produces at least one row
+NOT IN: Returns true if the subquery produces zero rows
+ALL: Returns true if all of the conditions are met in the subquery or zero rows
+ANY: Returns true if any matching row is found
+SOME: Returns true if any matching row is found
+NOT EXISTS: Return true if the subquery produces zero rows
+
+7. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+All volunteers. If the volunteer is fostering a dog, include each dog as well.
+
+SELECT volunteers.first_name, volunteers.last_name,
+CASE WHEN
+  (SELECT dogs.name
+   FROM dogs
+   WHERE volunteers.foster_dog_id = dogs.id) IS NOT NULL
+   THEN (SELECT dogs.name
+   FROM dogs
+   WHERE volunteers.foster_dog_id = dogs.id)
+   ELSE 'NONE' END AS foster_dog_name
+FROM volunteers;
+
+first_name	last_name	   foster_dog_name
+Albus	      Dumbledore	 NONE
+Rubeus	    Hagrid	     Munchkin
+Remus	      Lupin	       NONE
+Sirius	    Black	       NONE
+Marjorie	  Dursley	     Marmaduke
+
+The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy
+Tail" social media promotion which posts recent successful adoptions.
+
+SELECT cats.name AS cat_name, adopters.first_name AS adopter_name, cat_adoptions.date AS adoption_date
+FROM adopters, cats, cat_adoptions
+WHERE cat_adoptions.adopter_id = adopters.id
+AND cat_adoptions.cat_id = cats.id
+AND cat_adoptions.date > NOW() - INTERVAL '30 days'
+
+cat_name	 adopter_name	   adoption_date
+Mushi		   Arabella	       2018-04-06
+Victoire	 Argus		       2018-04-11
+
+Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+
+SELECT adopters.first_name AS potential_adopter, dogs.name AS dog
+FROM adopters, dogs, dog_adoptions
+WHERE dog_adoptions.adopter_id != adopters.id
+AND dogs.id != dog_adoptions.dog_id;
+
+potential_adopter	dog
+Hermione		      Boujee
+Hermione		      Munchkin
+Hermione		      Marley
+Hermione		      Lassie
+Hermione		      Marmaduke
+Arabella		      Boujee
+Arabella		      Munchkin
+Arabella		      Marley
+Arabella		      Lassie
+Arabella		      Marmaduke
+
+Lists of all cats and all dogs who have not been adopted.
+
+SELECT name AS dog_name
+FROM dogs
+WHERE id NOT IN
+  (SELECT dog_id FROM dog_adoptions WHERE dog_id IS NOT null);
+
+SELECT name AS cat_name
+FROM cats
+WHERE id NOT IN
+  (SELECT cat_id FROM cat_adoptions WHERE cat_id IS NOT null);
+
+dog_name
+Boujee
+Munchkin
+Marley
+Lassie
+Marmaduke
+
+cat_name
+Seashell
+Nala
+
+The name of the person who adopted Rosco.
+
+SELECT adopters.first_name AS roscos_adopter
+FROM adopters
+WHERE id IN
+  (SELECT dog_adoptions.adopter_id
+   FROM dog_adoptions, dogs
+   WHERE dogs.name = 'Rosco');
+
+roscos_adopter
+Argus
+
+8.Using this Library schema and data, write queries applying the following scenarios:
+To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+SELECT b.title, b.rank AS hold_rank, patrons.name
+FROM patrons,
+  (SELECT books.title AS title, holds.rank, holds.patron_id
+   FROM holds, books
+   WHERE holds.isbn = books.isbn AND books.title = 'Advanced Potion-Making') AS b
+WHERE patrons.id = b.patron_id
+ORDER BY b.rank;
+
+title			              hold_rank	    name
+Advanced Potion-Making	1		          Terry Boot
+Advanced Potion-Making	2		          Cedric Diggory
+
+Make a list of all book titles and denote whether or not a copy of that book is checked out.
+
+SELECT books.title,
+CASE WHEN (SELECT transactions.checked_in_date
+           FROM transactions
+           WHERE transactions.isbn = books.isbn
+           ORDER BY transactions.checked_in_date DESC LIMIT 1) IS NOT NULL
+  THEN 'AVAILABLE'
+  ELSE 'CHECKED OUT' END AS status
+FROM books;
+
+title						                           status
+Hogwarts: A History				                 AVAILABLE
+Fantastic Beasts and Where to Find Them		 CHECKED OUT
+Advanced Potion-Making				             CHECKED OUT
+
+In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out time by book name in the past month.
+
+SELECT SUM(transactions.checked_in_date - transactions.checked_out_date) AS checked_out_time, books.title
+FROM books, transactions
+WHERE books.isbn = transactions.isbn
+  AND transactions.checked_out_date > CURRENT_DATE - INTERVAL '30 DAYS'
+GROUP BY books.title;
+
+checked_out_time	     title
+5	                     Fantastic Beasts and Where to Find Them
+(null)	               Advanced Potion-Making
+
+In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+
+SELECT books.title, MAX(transactions.checked_out_date) AS last_checked_out
+FROM books, transactions
+WHERE transactions.isbn = books.isbn
+GROUP BY books.title
+HAVING MAX(transactions.checked_out_date) < NOW() - INTERVAL '5 years';
+
+title			            last_checked_out
+Hogwarts: A History	  2012-04-25
+
+List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+
+SELECT patrons.name,
+CASE WHEN (SELECT transactions.patron_id
+           FROM transactions
+           WHERE transactions.checked_in_date IS NULL
+           AND transactions.patron_id = patrons.id) IS NOT NULL
+     THEN (SELECT books.title
+           FROM books, transactions
+           WHERE transactions.checked_in_date IS NULL
+           AND transactions.patron_id = patrons.id
+           AND transactions.isbn = books.isbn)
+     ELSE 'NONE' END AS checked_out_book
+FROM patrons
+ORDER BY patrons.name;
+
+name	           checked_out_book
+Cedric Diggory	 Fantastic Beasts and Where to Find Them
+Cho Chang	       NONE
+Hermione Granger NONE
+Padma Patil	     NONE
+Terry Boot	     Advanced Potion-Making
+
+9. Using this Flight schema and data, write queries applying the following scenarios:
+To determine the most profitable airplanes, find all airplane models where each flight has had over 250 paying customers in the past month.
+
+SELECT airplanes.model
+FROM airplanes
+WHERE model IN
+  (SELECT flights.airplane_model
+   FROM flights, transactions
+   WHERE transactions.seats_sold > 250
+   AND transactions.date > CURRENT_DATE - INTERVAL '30 DAYS'
+   AND transactions.flight_number = flights.flight_number);
+
+   model
+   Boeing 777
+   Boeing 787
+   Airbus A330
+   Airbus A380
+
+To determine the most profitable flights, find all destination-origin pairs where 90% or more of the seats have been sold in the past month.
+
+SELECT flights.origin, flights.destination
+FROM flights,
+  (SELECT transactions.flight_number, SUM(transactions.seats_sold / airplanes.seat_capacity) AS seats_sold
+   FROM transactions, airplanes
+   WHERE seats_sold >= .9
+   AND transactions.date > CURRENT_DATE - INTERVAL '30 DAYS'
+  GROUP BY transactions.flight_number) AS most_profit
+WHERE most_profit.flight_number = flights.flight_number;
+
+origin	destination
+LAX	    GRU
+LHR	    JFK
+SFO	    HKG
+MEL	    SIN
+LHR	    JNB
+
+The airline is looking to expand its presence in Asia and globally. Find the total revenue of any flight (not time restricted) arriving at or departing from Singapore (SIN).
+
+SELECT asia_flights.flight_number, transactions.total_revenue
+FROM transactions,
+  (SELECT flights.flight_number
+   FROM flights
+   WHERE flights.origin = 'SIN'
+   OR flights.destination = 'SIN') AS asia_flights
+WHERE transactions.flight_number = asia_flights.flight_number;
+
+flight_number	  total_revenue
+7352	          250394.7
+7403	          131992.12
+
+11. Compare the subqueries you've written above. Compare them to the joins you wrote in Checkpoint 6. Which ones are more readable? Which were more logical to write?
+
+It depends. When I need a query to produce all the columns of one table and matching columns of a different table, an OUTER JOIN method is more readable and logical. If I need to pull and compare data from two tables and apply the results to another table, subqueries are more readable and logical. In my opinion, OUTER JOIN types of queries should be done with JOIN statements and subqueries are better suited for queries dealing with more than two tables.

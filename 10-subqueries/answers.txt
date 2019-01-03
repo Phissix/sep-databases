@@ -52,15 +52,15 @@ Marjorie	  Dursley	     Marmaduke
 The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy
 Tail" social media promotion which posts recent successful adoptions.
 
-SELECT cats.name AS cat_name, adopters.first_name AS adopter_name, cat_adoptions.date AS adoption_date
-FROM adopters, cats, cat_adoptions
-WHERE cat_adoptions.adopter_id = adopters.id
-AND cat_adoptions.cat_id = cats.id
-AND cat_adoptions.date > NOW() - INTERVAL '30 days'
+SELECT date AS "Adoption Date",
+  (SELECT name FROM cats AS c WHERE ca.cat_id = c.id) AS "Cat Name",
+  (SELECT last_name FROM adopters AS a WHERE ca.adopter_id = a.id) AS  "Adopter"
+FROM cat_adoptions as ca
+WHERE date > CURRENT_DATE - INTERVAL '30 DAYS';
 
-cat_name	 adopter_name	   adoption_date
-Mushi		   Arabella	       2018-04-06
-Victoire	 Argus		       2018-04-11
+Adoption Date	            Cat Name	 Adopter
+2018-12-14T00:00:00.000Z	Mushi	     Figg
+2018-12-19T00:00:00.000Z	Victoire	 Filch
 
 Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
 
@@ -149,26 +149,34 @@ Advanced Potion-Making				             CHECKED OUT
 
 In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out time by book name in the past month.
 
-SELECT SUM(transactions.checked_in_date - transactions.checked_out_date) AS checked_out_time, books.title
-FROM books, transactions
-WHERE books.isbn = transactions.isbn
-  AND transactions.checked_out_date > CURRENT_DATE - INTERVAL '30 DAYS'
-GROUP BY books.title;
+SELECT 	B.title, AVG(T.checked_in_date - T.checked_out_date)
+FROM transactions T
+JOIN books B ON B.isbn = T.isbn
+WHERE B.isbn = ANY
+    (SELECT T.isbn
+    FROM transactions T
+    WHERE T.checked_out_date > CURRENT_DATE - INTERVAL '1 MONTH'
+    AND T.checked_in_date IS NOT NULL)
+GROUP BY B.title
+ORDER BY 2;
 
-checked_out_time	     title
-5	                     Fantastic Beasts and Where to Find Them
-(null)	               Advanced Potion-Making
+| title                                   | avg                   |
+| --------------------------------------- | --------------------- |
+| Fantastic Beasts and Where to Find Them | 2.0000000000000000    |
 
 In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
 
-SELECT books.title, MAX(transactions.checked_out_date) AS last_checked_out
-FROM books, transactions
-WHERE transactions.isbn = books.isbn
-GROUP BY books.title
-HAVING MAX(transactions.checked_out_date) < NOW() - INTERVAL '5 years';
+SELECT B.title
+FROM books B
+WHERE B.isbn = ANY
+  (SELECT isbn
+  FROM transactions
+  GROUP BY isbn
+  HAVING MAX(checked_out_date) < CURRENT_DATE - INTERVAL '5 YEARS');
 
-title			            last_checked_out
-Hogwarts: A History	  2012-04-25
+| title               |
+| ------------------- |
+| Hogwarts: A History |
 
 List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
 
